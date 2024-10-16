@@ -1,5 +1,5 @@
-import { Tabs } from "expo-router";
 import React from "react";
+import { Tabs } from "expo-router";
 
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import { Colors } from "@/constants/Colors";
@@ -13,16 +13,22 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         headerShown: false,
+        tabBarShowLabel: false,
+        tabBarStyle: {
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          paddingTop: 8,
+        },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
-          tabBarIcon: ({ color, focused }) => (
+          tabBarIcon: ({ focused }) => (
             <TabBarIcon
               name={focused ? "home" : "home-outline"}
-              color={color}
+              color={focused ? "#ffd000" : "#777777"}
             />
           ),
         }}
@@ -30,11 +36,22 @@ export default function TabLayout() {
       <Tabs.Screen
         name="explore"
         options={{
-          title: "Search",
-          tabBarIcon: ({ color, focused }) => (
+          tabBarIcon: ({ focused }) => (
             <TabBarIcon
               name={focused ? "search" : "search-outline"}
-              color={color}
+              color={focused ? "#ffd000" : "#777777"}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="player"
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon
+              name={focused ? "play" : "play-outline"}
+              color={focused ? "#ffd000" : "#777777"}
+              // style={{ backgroundColor: "red", width: "100%", height: "100%" }}
             />
           ),
         }}
@@ -42,11 +59,10 @@ export default function TabLayout() {
       <Tabs.Screen
         name="stats"
         options={{
-          title: "Stats",
-          tabBarIcon: ({ color, focused }) => (
+          tabBarIcon: ({ focused }) => (
             <TabBarIcon
               name={focused ? "bar-chart" : "bar-chart-outline"}
-              color={color}
+              color={focused ? "#ffd000" : "#777777"}
             />
           ),
         }}
@@ -54,11 +70,10 @@ export default function TabLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          title: "Settings",
-          tabBarIcon: ({ color, focused }) => (
+          tabBarIcon: ({ focused }) => (
             <TabBarIcon
               name={focused ? "settings" : "settings-outline"}
-              color={color}
+              color={focused ? "#ffd000" : "#777777"}
             />
           ),
         }}
