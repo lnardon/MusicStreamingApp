@@ -1,92 +1,115 @@
-import { Image, StyleSheet, Platform } from "react-native";
+import { useState, useEffect } from "react";
+import {
+  Image,
+  StyleSheet,
+  View,
+  FlatList,
+  Text,
+  TouchableOpacity,
+} from "react-native";
 
-import { HelloWave } from "@/components/HelloWave";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
+import axios from "axios";
+
+const SERVER_API_URL = "http://192.168.15.10:7777";
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-      headerImage={
-        <Image
-          source={require("@/assets/images/partial-react-logo.png")}
-          style={styles.reactLogo}
-        />
+  const [lastAlbums, setLastAlbums] = useState([]);
+  const [lastSongs, setLastSongs] = useState([]);
+
+  useEffect(() => {
+    const fetchAlbums = async () => {
+      try {
+        const response = await axios.get(`${SERVER_API_URL}/getHistory`);
+        setLastAlbums(response.data.albums);
+        setLastSongs(response.data.songs);
+      } catch (error) {
+        console.error("Error fetching albums:", error);
       }
-    >
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Hey there!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit{" "}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText>{" "}
-          to see changes. Press{" "}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: "cmd + d", android: "cmd + m" })}
-          </ThemedText>{" "}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this
-          starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{" "}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText>{" "}
-          to get a fresh <ThemedText type="defaultSemiBold">app</ThemedText>{" "}
-          directory. This will move the current{" "}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{" "}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 4: Finish</ThemedText>
-        <ThemedText>
-          When you're ready, run{" "}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText>{" "}
-          to get a fresh <ThemedText type="defaultSemiBold">app</ThemedText>{" "}
-          directory. This will move the current directory. This will move the
-          directory. This will move the current current directory. This will
-          move the current directory. This will move the current directory. This
-          will move the current directory. This will move the current directory.
-          This will move the current directory. This will move the current{" "}
-          directory. This will move the current directory. This will move the
-          current directory. This will move the current directory. This will
-          move the current directory. This will move the current{" "}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{" "}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    };
+
+    fetchAlbums();
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      <Text>Home</Text>
+      <FlatList
+        style={styles.albumsList}
+        data={lastAlbums}
+        horizontal={true}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <TouchableOpacity>
+            <Image
+              source={{
+                uri: `${SERVER_API_URL}/getCover?file=${item.id}`,
+              }}
+              style={{
+                width: 150,
+                height: 150,
+                borderRadius: 8,
+                marginHorizontal: 10,
+              }}
+            />
+            {/* <ThemedText type="subtitle">{item.title}</ThemedText> */}
+          </TouchableOpacity>
+        )}
+      />
+      <Text style={styles.titleContainer}>Recently Played</Text>
+      <FlatList
+        style={{}}
+        data={lastSongs}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              marginVertical: 8,
+            }}
+          >
+            <Image
+              source={{
+                uri: `${SERVER_API_URL}/getCover?file=${item.album}`,
+              }}
+              style={{
+                width: 42,
+                height: 42,
+                borderRadius: 4,
+                marginHorizontal: 10,
+              }}
+            />
+            <ThemedText type="subtitle">{item.title}</ThemedText>
+          </TouchableOpacity>
+        )}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    display: "flex",
+    padding: 16,
+    marginTop: 42,
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+  },
   titleContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
+    marginTop: 32,
     marginBottom: 8,
+    color: "#fff",
+    fontSize: 22,
+    fontWeight: "bold",
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: "absolute",
+  albumsList: {
+    display: "flex",
+    flexDirection: "row",
+    width: "100%",
+    height: 256,
   },
 });
